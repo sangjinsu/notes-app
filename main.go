@@ -4,9 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 )
-
 
 func main() {
 
@@ -22,9 +20,9 @@ func main() {
 
 	addTitleFlag := addCommand.String("title", "", "노트 이름을 입력합니다")
 	addBodyFlag := addCommand.String("body", "", "노트 내용을 입력합니다")
-	//listAllFlag := listCommand.Bool("all", false, "노트 전체를 출력합니다")
-	//removeTitleFlag = removeCommand.String("title", "", "노트 이름을 입력합니다")
-	//readTitleFlag = readCommand.String("title", "", "노트 이름을 입력합니다")
+	listAllFlag := listCommand.Bool("all", false, "노트 전체를 출력합니다")
+	removeTitleFlag := removeCommand.String("title", "", "노트 이름을 입력합니다")
+	readTitleFlag := readCommand.String("title", "", "노트 이름을 입력합니다")
 
 	switch command := os.Args[1]; command {
 	case "add":
@@ -48,5 +46,27 @@ func main() {
 		}
 
 		// 노트 더하기
+	}
+
+	if removeCommand.Parsed() {
+		if *removeTitleFlag == "" {
+			removeCommand.PrintDefaults()
+			os.Exit(1)
+		}
+	}
+
+	if listCommand.Parsed() {
+		if *listAllFlag {
+
+		} else {
+
+		}
+	}
+
+	if readCommand.Parsed() {
+		if *readTitleFlag == "" {
+			removeCommand.PrintDefaults()
+			os.Exit(1)
+		}
 	}
 }
