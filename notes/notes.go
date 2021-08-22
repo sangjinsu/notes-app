@@ -1,9 +1,11 @@
-package main
+package notes
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 )
 
 type Notes []Note
@@ -13,57 +15,77 @@ type Note struct {
 	Body  []string `json:"body"`
 }
 
+var writer = bufio.NewWriter(os.Stdout)
+
 func AddNotes(title, body string) {
+	defer writer.Flush()
 	notes := loadNotes()
 	found := findNote(notes, title)
 
 	if found == -1 {
 		notes = append(notes, Note{Title: title, Body: []string{body}})
-		fmt.Println("New note added")
+		fmt.Fprintln(writer, "New note added")
 	} else {
-		fmt.Println("Note is already existed")
+		fmt.Fprintln(writer, "Note is already existed")
 		notes[found].Body = append(notes[found].Body, body)
-		fmt.Println("body added")
+		fmt.Fprintln(writer, "body added")
 	}
 	saveNotes(notes)
 }
 
 func RemoveNote(title string) {
+	defer writer.Flush()
 	notes := loadNotes()
 	found := findNote(notes, title)
 	if found == -1 {
-		fmt.Println("Note not found")
+		fmt.Fprintln(writer, "Note not found")
 	} else {
 		notes = append(notes[:found], notes[found+1:]...)
+		fmt.Fprintln(writer, "Note removed")
 	}
 	saveNotes(notes)
 }
 
-func ListNote() {
+func ListAllNote() {
+	defer writer.Flush()
 	notes := loadNotes()
 	if len(notes) > 0 {
-		fmt.Println("Your Notes")
+		fmt.Fprintln(writer, "Your Notes")
 		for _, note := range notes {
 			fmt.Printf("Title: %s\n", note.Title)
 			for i, body := range note.Body {
-				fmt.Printf("%d. %s\n", i + 1, body)
+				fmt.Fprintf(writer, "%d. %s\n", i+1, body)
 			}
 		}
 	} else {
-		fmt.Println("Notes are empty")
+		fmt.Fprintln(writer, "Notes are empty")
+	}
+}
+
+func ListTitleNote() {
+	defer writer.Flush()
+	notes := loadNotes()
+	if len(notes) > 0 {
+		fmt.Fprintln(writer, "Your Notes")
+		for _, note := range notes {
+			fmt.Fprintf(writer, "%s\n", note.Title)
+		}
+	} else {
+		fmt.Fprintln(writer, "Notes are empty")
 	}
 }
 
 func ReadNote(title string) {
+	defer writer.Flush()
 	notes := loadNotes()
 	found := findNote(notes, title)
 	if found == -1 {
-		fmt.Println("Note not found")
+		fmt.Fprintln(writer, "Note not found")
 	} else {
 		body := notes[found].Body
-		fmt.Printf("Title: %s\n", notes[found].Title)
+		fmt.Fprintf(writer, "Title: %s\n", notes[found].Title)
 		for i, s := range body {
-			fmt.Printf("%d. %s\n", i + 1, s)
+			fmt.Fprintf(writer, "%d. %s\n", i+1, s)
 		}
 	}
 }
@@ -80,11 +102,16 @@ func saveNotes(notes Notes) {
 }
 
 func loadNotes() Notes {
+	var notes Notes
 	file, err := ioutil.ReadFile("notes.json")
 	if err != nil {
-		panic(err)
+		if os.IsNotExist(err) {
+			return notes
+		} else {
+			panic(err)
+		}
 	}
-	var notes Notes
+
 	err = json.Unmarshal(file, &notes)
 	if err != nil {
 		panic(err)
@@ -100,4 +127,3 @@ func findNote(notes Notes, title string) int {
 	}
 	return -1
 }
-
