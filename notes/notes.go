@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/notes/handleerror"
 	"io/ioutil"
 	"os"
 )
@@ -93,11 +94,11 @@ func ReadNote(title string) {
 func saveNotes(notes Notes) {
 	bytes, err := json.Marshal(notes)
 	if err != nil {
-		panic(err)
+		panic(handleerror.MakeErr("json 파일로 변환할 수 없습니다", err))
 	}
 	err = ioutil.WriteFile("notes.json", bytes, 0755)
 	if err != nil {
-		panic(err)
+		panic(handleerror.MakeErr("json 파일에 작성할 수 없습니다", err))
 	}
 }
 
@@ -108,13 +109,13 @@ func loadNotes() Notes {
 		if os.IsNotExist(err) {
 			return notes
 		} else {
-			panic(err)
+			panic(handleerror.MakeErr("파일을 읽을 수 없습니다", err))
 		}
 	}
 
 	err = json.Unmarshal(file, &notes)
 	if err != nil {
-		panic(err)
+		panic(handleerror.MakeErr("json 파일을 읽을 수 없습니다", err))
 	}
 	return notes
 }
