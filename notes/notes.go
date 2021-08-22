@@ -39,6 +39,21 @@ func RemoveNote(title string) {
 	saveNotes(notes)
 }
 
+func ListNote() {
+	notes := loadNotes()
+	if len(notes) > 0 {
+		fmt.Println("Your Notes")
+		for _, note := range notes {
+			fmt.Printf("Title: %s\n", note.Title)
+			for i, body := range note.Body {
+				fmt.Printf("%d. %s\n", i + 1, body)
+			}
+		}
+	} else {
+		fmt.Println("Notes are empty")
+	}
+}
+
 func saveNotes(notes Notes) {
 	bytes, err := json.Marshal(notes)
 	if err != nil {
@@ -79,5 +94,6 @@ func main() {
 	saveNotes(notes)
 
 	AddNotes("hello", "bye2")
-	RemoveNote("hello")
+	// RemoveNote("hello")
+	ListNote()
 }
