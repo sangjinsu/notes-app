@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
+	"io/ioutil"
 )
 
 type Notes []Note
@@ -15,14 +15,7 @@ type Note struct {
 
 func AddNotes(title, body string) {
 	notes := loadNotes()
-
-	found := -1
-	for i, n := range notes {
-		if n.Title == title {
-			found = i
-			break
-		}
-	}
+	found := findNote(notes, title)
 
 	if found == -1 {
 		notes = append(notes, Note{Title: title, Body: []string{body}})
@@ -35,49 +28,48 @@ func AddNotes(title, body string) {
 	saveNotes(notes)
 }
 
-func saveNotes(notes Notes) {
-	f, err := os.OpenFile("notes.json", os.O_WRONLY, 0755)
-	if err != nil {
-		if os.IsNotExist(err) {
-			f, _ = os.Create("notes.json")
-		} else {
-			panic(err)
-		}
+func RemoveNote(title string) {
+	notes := loadNotes()
+	found := findNote(notes, title)
+	if found == -1 {
+		fmt.Println("Note not found")
+	} else {
+		notes = append(notes[:found], notes[found+1:]...)
 	}
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(f)
+	saveNotes(notes)
+}
 
-	encoder := json.NewEncoder(f)
-	err = encoder.Encode(notes)
+func saveNotes(notes Notes) {
+	bytes, err := json.Marshal(notes)
+	if err != nil {
+		panic(err)
+	}
+	err = ioutil.WriteFile("notes.json", bytes, 0755)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func loadNotes() Notes {
-	f, err := os.OpenFile("notes.json", os.O_RDONLY, 0755)
+	file, err := ioutil.ReadFile("notes.json")
 	if err != nil {
 		panic(err)
 	}
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			panic(err)
+	var notes Notes
+	err = json.Unmarshal(file, &notes)
+	if err != nil {
+		panic(err)
+	}
+	return notes
+}
+
+func findNote(notes Notes, title string) int {
+	for i, n := range notes {
+		if n.Title == title {
+			return i
 		}
-	}(f)
-
-	encoder := json.NewDecoder(f)
-
-	notes := new(Notes)
-	err = encoder.Decode(notes)
-	if err != nil {
-		panic(err)
 	}
-	return *notes
+	return -1
 }
 
 func main() {
@@ -87,4 +79,5 @@ func main() {
 	saveNotes(notes)
 
 	AddNotes("hello", "bye2")
+	RemoveNote("hello")
 }
