@@ -54,6 +54,20 @@ func ListNote() {
 	}
 }
 
+func ReadNote(title string) {
+	notes := loadNotes()
+	found := findNote(notes, title)
+	if found == -1 {
+		fmt.Println("Note not found")
+	} else {
+		body := notes[found].Body
+		fmt.Printf("Title: %s\n", notes[found].Title)
+		for i, s := range body {
+			fmt.Printf("%d. %s\n", i + 1, s)
+		}
+	}
+}
+
 func saveNotes(notes Notes) {
 	bytes, err := json.Marshal(notes)
 	if err != nil {
@@ -87,13 +101,3 @@ func findNote(notes Notes, title string) int {
 	return -1
 }
 
-func main() {
-	note := Note{Title: "hello", Body: []string{"hello2"}}
-	var notes Notes
-	notes = []Note{note, {Title: "hello2", Body: []string{"hello3"}}}
-	saveNotes(notes)
-
-	AddNotes("hello", "bye2")
-	// RemoveNote("hello")
-	ListNote()
-}
