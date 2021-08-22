@@ -18,11 +18,13 @@ func main() {
 	listCommand := flag.NewFlagSet("list", flag.ExitOnError)
 	readCommand := flag.NewFlagSet("read", flag.ExitOnError)
 
-	addTitleFlag := addCommand.String("title", "", "노트 이름을 입력합니다")
-	addBodyFlag := addCommand.String("body", "", "노트 내용을 입력합니다")
-	listAllFlag := listCommand.Bool("all", false, "노트 전체를 출력합니다")
-	removeTitleFlag := removeCommand.String("title", "", "노트 이름을 입력합니다")
-	readTitleFlag := readCommand.String("title", "", "노트 이름을 입력합니다")
+	var addTitleFlag, addBodyFlag, removeTitleFlag, readTitleFlag string
+	var listAllFlag bool
+	addCommand.StringVar(&addTitleFlag, "title", "", "노트 이름을 입력합니다")
+	addCommand.StringVar(&addBodyFlag,"body", "", "노트 내용을 입력합니다")
+	listCommand.BoolVar(&listAllFlag, "all", false, "노트 전체를 출력합니다")
+	removeCommand.StringVar(&removeTitleFlag, "title", "", "노트 이름을 입력합니다")
+	readCommand.StringVar(&readTitleFlag,"title", "", "노트 이름을 입력합니다")
 
 	switch command := os.Args[1]; command {
 	case "add":
@@ -40,7 +42,7 @@ func main() {
 	}
 
 	if addCommand.Parsed() {
-		if *addTitleFlag == "" || *addBodyFlag == "" {
+		if addTitleFlag == "" || addBodyFlag == "" {
 			addCommand.PrintDefaults()
 			os.Exit(1)
 		}
@@ -49,14 +51,14 @@ func main() {
 	}
 
 	if removeCommand.Parsed() {
-		if *removeTitleFlag == "" {
+		if removeTitleFlag == "" {
 			removeCommand.PrintDefaults()
 			os.Exit(1)
 		}
 	}
 
 	if listCommand.Parsed() {
-		if *listAllFlag {
+		if listAllFlag {
 
 		} else {
 
@@ -64,7 +66,7 @@ func main() {
 	}
 
 	if readCommand.Parsed() {
-		if *readTitleFlag == "" {
+		if readTitleFlag == "" {
 			removeCommand.PrintDefaults()
 			os.Exit(1)
 		}
