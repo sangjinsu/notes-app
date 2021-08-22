@@ -3,8 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/notes/notes"
 	"os"
 )
+
+var err error
 
 func main() {
 
@@ -13,31 +16,50 @@ func main() {
 		os.Exit(1)
 	}
 
-	addCommand := flag.NewFlagSet("add", flag.ExitOnError)
-	removeCommand := flag.NewFlagSet("remove", flag.ExitOnError)
-	listCommand := flag.NewFlagSet("list", flag.ExitOnError)
-	readCommand := flag.NewFlagSet("read", flag.ExitOnError)
+	var addCommand = flag.NewFlagSet("add", flag.ExitOnError)
+	var removeCommand = flag.NewFlagSet("remove", flag.ExitOnError)
+	var listCommand = flag.NewFlagSet("list", flag.ExitOnError)
+	var readCommand = flag.NewFlagSet("read", flag.ExitOnError)
 
 	var addTitleFlag, addBodyFlag, removeTitleFlag, readTitleFlag string
 	var listAllFlag bool
+
 	addCommand.StringVar(&addTitleFlag, "title", "", "노트 이름을 입력합니다")
-	addCommand.StringVar(&addBodyFlag,"body", "", "노트 내용을 입력합니다")
+	addCommand.StringVar(&addBodyFlag, "body", "", "노트 내용을 입력합니다")
 	listCommand.BoolVar(&listAllFlag, "all", false, "노트 전체를 출력합니다")
 	removeCommand.StringVar(&removeTitleFlag, "title", "", "노트 이름을 입력합니다")
-	readCommand.StringVar(&readTitleFlag,"title", "", "노트 이름을 입력합니다")
+	readCommand.StringVar(&readTitleFlag, "title", "", "노트 이름을 입력합니다")
 
 	switch command := os.Args[1]; command {
 	case "add":
-		addCommand.Parse(os.Args[2:])
+		err = addCommand.Parse(os.Args[2:])
+		if err != nil {
+			panic(err)
+		}
 	case "remove":
-		removeCommand.Parse(os.Args[2:])
+		err = removeCommand.Parse(os.Args[2:])
+		if err != nil {
+			panic(err)
+		}
 	case "list":
-		listCommand.Parse(os.Args[2:])
+		err = listCommand.Parse(os.Args[2:])
+		if err != nil {
+			panic(err)
+		}
 	case "read":
-		readCommand.Parse(os.Args[2:])
+		err = readCommand.Parse(os.Args[2:])
+		if err != nil {
+			panic(err)
+		}
 	default:
-		flag.PrintDefaults()
-		fmt.Println("Press ./notes -help")
+		fmt.Println("Usage of add:")
+		addCommand.PrintDefaults()
+		fmt.Println("Usage of remove:")
+		removeCommand.PrintDefaults()
+		fmt.Println("Usage of list:")
+		listCommand.PrintDefaults()
+		fmt.Println("Usage of read:")
+		readCommand.PrintDefaults()
 		os.Exit(1)
 	}
 
@@ -46,8 +68,7 @@ func main() {
 			addCommand.PrintDefaults()
 			os.Exit(1)
 		}
-
-		// 노트 더하기
+		notes.AddNotes(addTitleFlag, addBodyFlag)
 	}
 
 	if removeCommand.Parsed() {
@@ -55,13 +76,14 @@ func main() {
 			removeCommand.PrintDefaults()
 			os.Exit(1)
 		}
+		notes.RemoveNote(removeTitleFlag)
 	}
 
 	if listCommand.Parsed() {
 		if listAllFlag {
-
+			notes.ListAllNote()
 		} else {
-
+			notes.ListTitleNote()
 		}
 	}
 
@@ -70,5 +92,6 @@ func main() {
 			removeCommand.PrintDefaults()
 			os.Exit(1)
 		}
+		notes.ReadNote(readTitleFlag)
 	}
 }
