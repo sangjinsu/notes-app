@@ -3,22 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/notes/commands"
-	"log"
+	"github.com/notes/handleerror"
 	"os"
 )
-
-func reportPanic() {
-	p := recover()
-	if p == nil {
-		return
-	}
-	err, ok := p.(error)
-	if ok {
-		log.Fatalln(err)
-	} else {
-		panic(p)
-	}
-}
 
 func main() {
 
@@ -27,6 +14,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	defer reportPanic()
+	defer handleerror.ReportPanic()
 	commands.Init()
 }

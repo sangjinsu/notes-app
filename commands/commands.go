@@ -3,6 +3,7 @@ package commands
 import (
 	"flag"
 	"fmt"
+	"github.com/notes/handleerror"
 	"github.com/notes/notes"
 	"os"
 )
@@ -28,22 +29,22 @@ func Init() {
 	case "add":
 		err = addCommand.Parse(os.Args[2:])
 		if err != nil {
-			panic(err)
+			panic(handleerror.MakeErr("명령을 수행할 수 없습니다: ", err))
 		}
 	case "remove":
 		err = removeCommand.Parse(os.Args[2:])
 		if err != nil {
-			panic(err)
+			panic(handleerror.MakeErr("명령을 수행할 수 없습니다: ", err))
 		}
 	case "list":
 		err = listCommand.Parse(os.Args[2:])
 		if err != nil {
-			panic(err)
+			panic(handleerror.MakeErr("명령을 수행할 수 없습니다: ", err))
 		}
 	case "read":
 		err = readCommand.Parse(os.Args[2:])
 		if err != nil {
-			panic(err)
+			panic(handleerror.MakeErr("명령을 수행할 수 없습니다: ", err))
 		}
 	default:
 		fmt.Println("Usage of add:")
