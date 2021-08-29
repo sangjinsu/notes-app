@@ -1,7 +1,7 @@
 // https://github.com/ttacon/chalk
 // Copyright (c) 2014 Trey Tacon
 // The MIT License (MIT)
-package main
+package chalk
 
 import "fmt"
 
@@ -145,10 +145,4 @@ func (s *style) WithTextStyle(textStyle TextStyle) style {
 
 func (s *style) String() string {
 	return fmt.Sprintf("\u001b[%dm", 40+s.background.Value()) + fmt.Sprintf("\u001b[%dm", 30+s.foreground.Value())
-}
-
-func main() {
-	fmt.Println(BrightGreen, "Writing in colors", Green, "is so much fun", Reset)
-	fmt.Println(Blue.Color("You can use colors to color specific phrases"))
-	fmt.Println(Bold.TextStyle("We can have bold text"))
 }
