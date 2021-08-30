@@ -3,7 +3,9 @@
 // The MIT License (MIT)
 package chalk
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var (
 	Black      = Color{0}
@@ -49,7 +51,7 @@ func (c Color) Value() int {
 	return c.value
 }
 
-func (c Color) Color(value string) string {
+func (c Color) Set(value string) string {
 	return fmt.Sprintf("%s%s%s", c, value, ResetColor)
 }
 
@@ -65,7 +67,7 @@ func (bc BrightColor) Value() int {
 	return bc.value
 }
 
-func (bc BrightColor) string(value string) string {
+func (bc BrightColor) Set(value string) string {
 	return fmt.Sprintf("%s%s%s", bc, value, ResetColor)
 }
 
@@ -104,9 +106,9 @@ type Style interface {
 	Foreground(Color)
 	Background(Color)
 	Style(string) string
-	WithBackground(Color) style
-	WithForeground(Color) style
-	WithTextStyle(TextStyle) style
+	WithBackground(Color) Style
+	WithForeground(Color) Style
+	WithTextStyle(TextStyle) Style
 	String() string
 }
 
@@ -128,19 +130,19 @@ func (s *style) Style(value string) string {
 	return fmt.Sprintf("%s%s%s", s, s.textStyle.TextStyle(value), Reset)
 }
 
-func (s *style) WithBackground(color Color) style {
+func (s *style) WithBackground(color Color) Style {
 	s.Background(color)
-	return *s
+	return s
 }
 
-func (s *style) WithForeground(color Color) style {
+func (s *style) WithForeground(color Color) Style {
 	s.Foreground(color)
-	return *s
+	return s
 }
 
-func (s *style) WithTextStyle(textStyle TextStyle) style {
+func (s *style) WithTextStyle(textStyle TextStyle) Style {
 	s.textStyle = textStyle
-	return *s
+	return s
 }
 
 func (s *style) String() string {

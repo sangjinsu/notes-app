@@ -2,6 +2,7 @@ package handleerror
 
 import (
 	"fmt"
+	"github.com/notes/chalk"
 	"log"
 )
 
@@ -19,5 +20,5 @@ func ReportPanic() {
 }
 
 func MakeErr(s string, err error) error {
-	return fmt.Errorf("%s: %s", s, err)
+	return fmt.Errorf("%s%s: %s%s", chalk.Red, s, err, chalk.Reset)
 }
