@@ -48,7 +48,7 @@
     	BrightWhite   = BrightColor{White}
     ```
   
-     	2. Color 함수를 Color 클래스와 겹칠 우려가 있어 Set으로 변경하였다
+     2. Color 함수를 Color 클래스와 겹칠 우려가 있어 Set으로 변경하였다
   
     ```go
     func (c Color) Set(value string) string {
