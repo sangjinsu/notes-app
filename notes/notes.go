@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"github.com/notes/chalk"
 	"github.com/notes/handleerror"
 	"io/ioutil"
 	"os"
@@ -25,11 +26,11 @@ func AddNotes(title, body string) {
 
 	if found == -1 {
 		notes = append(notes, Note{Title: title, Body: []string{body}})
-		fmt.Fprintln(writer, "New note added")
+		fmt.Fprintln(writer, chalk.Green.Set("New note added"))
 	} else {
-		fmt.Fprintln(writer, "Note is already existed")
+		fmt.Fprintln(writer, chalk.Yellow.Set("Note is already existed"))
 		notes[found].Body = append(notes[found].Body, body)
-		fmt.Fprintln(writer, "body added")
+		fmt.Fprintln(writer, chalk.Green.Set("body added"))
 	}
 	saveNotes(notes)
 }
@@ -39,10 +40,10 @@ func RemoveNote(title string) {
 	notes := loadNotes()
 	found := findNote(notes, title)
 	if found == -1 {
-		fmt.Fprintln(writer, "Note not found")
+		fmt.Fprintln(writer, chalk.BrightYellow.Set("Note not found"))
 	} else {
 		notes = append(notes[:found], notes[found+1:]...)
-		fmt.Fprintln(writer, "Note removed")
+		fmt.Fprintln(writer, chalk.Green.Set("Note removed"))
 	}
 	saveNotes(notes)
 }
@@ -53,13 +54,13 @@ func ListAllNote() {
 	if len(notes) > 0 {
 		fmt.Fprintln(writer, "Your Notes")
 		for _, note := range notes {
-			fmt.Printf("Title: %s\n", note.Title)
+			fmt.Fprintf(writer, "Title: %s\n", note.Title)
 			for i, body := range note.Body {
 				fmt.Fprintf(writer, "%d. %s\n", i+1, body)
 			}
 		}
 	} else {
-		fmt.Fprintln(writer, "Notes are empty")
+		fmt.Fprintln(writer, chalk.Yellow.Set("Notes are empty"))
 	}
 }
 
@@ -72,7 +73,7 @@ func ListTitleNote() {
 			fmt.Fprintf(writer, "%s\n", note.Title)
 		}
 	} else {
-		fmt.Fprintln(writer, "Notes are empty")
+		fmt.Fprintln(writer, chalk.Yellow.Set("Notes are empty"))
 	}
 }
 
@@ -81,7 +82,7 @@ func ReadNote(title string) {
 	notes := loadNotes()
 	found := findNote(notes, title)
 	if found == -1 {
-		fmt.Fprintln(writer, "Note not found")
+		fmt.Fprintln(writer, chalk.BrightYellow.Set("Note not found"))
 	} else {
 		body := notes[found].Body
 		fmt.Fprintf(writer, "Title: %s\n", notes[found].Title)
@@ -109,7 +110,7 @@ func loadNotes() Notes {
 		if os.IsNotExist(err) {
 			return notes
 		} else {
-			panic(handleerror.MakeErr("파일을 읽을 수 없습니다", err))
+			panic(handleerror.MakeErr("json 파일을 읽을 수 없습니다", err))
 		}
 	}
 
