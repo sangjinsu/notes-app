@@ -1,6 +1,3 @@
-// https://github.com/ttacon/chalk
-// Copyright (c) 2014 Trey Tacon
-// The MIT License (MIT)
 package chalk
 
 import (
@@ -59,6 +56,10 @@ func (c Color) String() string {
 	return fmt.Sprintf("\u001b[%dm", 30+c.value)
 }
 
+func (c Color) NewStyle() Style {
+	return &style{foreground: c}
+}
+
 type BrightColor struct {
 	Color
 }
@@ -73,6 +74,10 @@ func (bc BrightColor) Set(value string) string {
 
 func (bc BrightColor) String() string {
 	return fmt.Sprintf("\u001b[%dm", 90+bc.value)
+}
+
+func (bc BrightColor) NewStyle() Style {
+	return &style{foreground: bc.Color}
 }
 
 type textStyleDemarcation int
@@ -146,5 +151,5 @@ func (s *style) WithTextStyle(textStyle TextStyle) Style {
 }
 
 func (s *style) String() string {
-	return fmt.Sprintf("\u001b[%dm", 40+s.background.Value()) + fmt.Sprintf("\u001b[%dm", 30+s.foreground.Value())
+	return fmt.Sprintf("\u001b[%dm\u001b[%dm", 40+s.background.Value(), 30+s.foreground.Value())
 }
